@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DbfShowLib.Dbf
+namespace DbfShowLib.DBF
 {
-    public class Dbf : StandartBase, IDataBase
+    public partial class Dbf : StandartBase, IDataBase
     {
         public static long ToJulian(DateTime dateTime)
         {
