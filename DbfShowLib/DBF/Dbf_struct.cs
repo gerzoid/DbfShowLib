@@ -6,7 +6,7 @@ using System.Text;
 namespace DbfShowLib.DBF
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Header
+    struct Header
     {
         public byte byte1;
         public byte yy, mm, dd;    //Дата последнего обновления ГГ ММ ДД
@@ -26,7 +26,7 @@ namespace DbfShowLib.DBF
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Header_DBASEIII
+    struct Header_DBASEIII
     {
         public byte byte1;
         public byte yy, mm, dd;    //Дата последнего обновления ГГ ММ ДД
@@ -41,7 +41,7 @@ namespace DbfShowLib.DBF
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Column
+    struct Column
     {
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 11)]
         public char[] name;     // 0- 10

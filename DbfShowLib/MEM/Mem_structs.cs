@@ -6,7 +6,7 @@ using System.Text;
 namespace DbfShowLib.MEM
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct MEMRecord
+    struct MEMRecord
     {
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 11)]
         public char[] name;     // 0- 10
@@ -18,7 +18,7 @@ namespace DbfShowLib.MEM
         public char[] reserved2;     // 0- 10
         public byte plus;
     }
-    public struct MEMColumn
+    struct MEMColumn
     {
         public string name;
         public char tip;

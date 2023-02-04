@@ -5,9 +5,9 @@ using System.Text;
 
 namespace DbfShowLib
 {
-    public interface IDataBase
+    interface IDataBase
     {
-        public void OpenFile();
+        public void OpenFile(string fileName);
         public void Close();
         //public ReadRow();
     }

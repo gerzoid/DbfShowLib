@@ -5,14 +5,14 @@ using System.Text;
 
 namespace DbfShowLib
 {
-    public struct CodePage
+    struct CodePage
     {
         public string code { get; set; }
         public string codePage { get; set; }
         public string name { get; set; }
     }
 
-    public class CodePages
+    class CodePages
     {
         List<CodePage> listCodePages;
 

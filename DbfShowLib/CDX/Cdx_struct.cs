@@ -6,7 +6,7 @@ using System.Text;
 namespace DbfShowLib.CDX
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct CDXHeader
+    struct CDXHeader
     {
         public int pointerRoot;
         public int pointerFree;
@@ -17,7 +17,7 @@ namespace DbfShowLib.CDX
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct ExteriorNodeRecord
+    struct ExteriorNodeRecord
     {
         public short atributNode;
         public short keyCount;
