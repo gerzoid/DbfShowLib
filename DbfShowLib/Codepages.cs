@@ -5,17 +5,18 @@ using System.Text;
 
 namespace DbfShowLib
 {
-    struct CodePage
+    public struct CodePage
     {
         public string code { get; set; }
         public string codePage { get; set; }
         public string name { get; set; }
     }
 
-    class CodePages
+    public class CodePages
     {
         List<CodePage> listCodePages;
 
+        public CodePage codePage = new CodePage();
         //Инициализация
         public CodePages()
         {
@@ -91,7 +92,8 @@ namespace DbfShowLib
 
         public CodePage FindByCode(string code)
         {
-            return listCodePages.Select(d => new CodePage() { code = d.code, codePage = d.codePage, name = d.name }).Where(p=>p.code.Equals(code)).FirstOrDefault();
+            var t= listCodePages.Select(d => new CodePage() { code = d.code, codePage = d.codePage, name = d.name }).Where(p => p.code.Equals(code)).FirstOrDefault();
+            return t;
         }
         public CodePage FindByCodePage(string codePage)
         {

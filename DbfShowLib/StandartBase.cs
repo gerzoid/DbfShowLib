@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DbfShowLib
 {
-    abstract class StandartBase: IDataBase
+    public abstract class StandartBase: IDataBase
     {
         protected int[]? filteredRecords;
         protected string? currentFileName;                       //Имя файла

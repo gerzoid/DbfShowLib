@@ -13,6 +13,7 @@ namespace DbfShowLib.DBF
         private Header header;
         private Column column;
         private List<Column> columns;
+        private CodePage codePage = new CodePage();
 
         public void ReadHeader()
         {
@@ -21,7 +22,8 @@ namespace DbfShowLib.DBF
             GCHandle pHandle = GCHandle.Alloc(headerDBF, GCHandleType.Pinned);
             header = (Header)Marshal.PtrToStructure(pHandle.AddrOfPinnedObject(), typeof(Header));
             pHandle.Free();
-            //codePage_ = header.codePage;
+            CodePages cp = new CodePages();
+            codePage = cp.FindByCode(Convert.ToString(header.codePage));
 
             double d = (header.headerSize - 33) / 32;
             if ((header.byte1 == 48) || (header.byte1 == 49) || (header.byte1 == 50))     //Если это VFP то true
