@@ -15,6 +15,19 @@ namespace DbfShowLib.DBF
         private List<Column> columns;
         private CodePage codePage = new CodePage();
 
+        public override string GetColumnName(int columnIndex)
+        {
+            return new string(columns[columnIndex].name).TrimEnd('\0');
+        }
+        public override int GetColumnSize(int columnIndex)
+        {
+            return columns[columnIndex].sizeBin;
+        }
+        public override string GetColumnType(int columnIndex)
+        {
+            return columns[columnIndex].tip.ToString();
+        }
+
         public void ReadHeader()
         {
             long positionTemp = fileStreamDB.Position;

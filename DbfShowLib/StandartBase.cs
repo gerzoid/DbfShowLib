@@ -21,6 +21,19 @@ namespace DbfShowLib
         protected int codePageID = 201;
         protected string codePageName = "Russian Windows";
 
+        public int CountColumns {  get { return countColumns; } }
+        public int CountRows { get {  return countRows; } }
+
+        public virtual string GetColumnName(int columnIndex)
+        {
+            return "Col"+columnIndex;
+        }
+        public virtual string GetColumnType(int columnIndex)
+        {
+            return "char";
+        }
+        public abstract int GetColumnSize(int columnIndex);
+
         public void Close()
         {
             fileStreamDB.Close();
