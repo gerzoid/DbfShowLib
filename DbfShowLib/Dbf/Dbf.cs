@@ -13,7 +13,6 @@ namespace DbfShowLib.DBF
         private Header header;
         private Column column;
         private List<Column> columns;
-        private CodePage codePage = new CodePage();
 
         public override string GetColumnName(int columnIndex)
         {
@@ -35,6 +34,7 @@ namespace DbfShowLib.DBF
             GCHandle pHandle = GCHandle.Alloc(headerDBF, GCHandleType.Pinned);
             header = (Header)Marshal.PtrToStructure(pHandle.AddrOfPinnedObject(), typeof(Header));
             pHandle.Free();
+            
             CodePages cp = new CodePages();
             codePage = cp.FindByCode(Convert.ToString(header.codePage));
 
@@ -83,12 +83,6 @@ namespace DbfShowLib.DBF
             ReadColumn();
 
         }
-
-        public void Close()
-        {
-            throw new NotImplementedException();
-        }
-
 
         public static byte[] StructToBuff<T>(T value) where T : struct
         {

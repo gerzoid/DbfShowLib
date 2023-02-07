@@ -17,10 +17,8 @@ namespace DbfShowLib
 
         protected CodePages CodePages = new CodePages();
 
-        protected int codePage = 1251;
-        protected int codePageID = 201;
-        protected string codePageName = "Russian Windows";
-
+        protected CodePage codePage = new CodePage() { code = "201", codePage = "1251", name = "Russian Windows" };
+       
         public int CountColumns {  get { return countColumns; } }
         public int CountRows { get {  return countRows; } }
 
@@ -50,6 +48,7 @@ namespace DbfShowLib
             {
                 fileStreamDB = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 fileAccessMode = FileAccessMode.Read;
+                Console.WriteLine(E.Message);
             }
             fileStreamDB.Position = 0;
             currentFileName = fileName;
