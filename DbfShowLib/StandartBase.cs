@@ -15,10 +15,13 @@ namespace DbfShowLib
         protected int countColumns = 0;
         protected int countRows = 0;
 
-        protected CodePages CodePages = new CodePages();
+        protected Encoding encoding = Encoding.ASCII;
 
+        protected CodePages CodePages = new CodePages();
         protected CodePage codePage = new CodePage() { code = "201", codePage = "1251", name = "Russian Windows" };
        
+        public CodePage CodePage { get { return codePage; } }
+
         public int CountColumns {  get { return countColumns; } }
         public int CountRows { get {  return countRows; } }
 
@@ -26,6 +29,8 @@ namespace DbfShowLib
         {
             return "Col"+columnIndex;
         }
+
+        public abstract string GetVersion();
         public virtual string GetColumnType(int columnIndex)
         {
             return "char";
@@ -34,7 +39,12 @@ namespace DbfShowLib
 
         public void Close()
         {
-            fileStreamDB.Close();
+            fileStreamDB?.Close();
+        }
+
+        public virtual string GetValue(int columnIndex, int rowIndex)
+        {
+            return "";
         }
 
         public virtual void OpenFile(string fileName)
