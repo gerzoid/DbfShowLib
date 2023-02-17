@@ -65,6 +65,19 @@ namespace DbfShowLib.DBF
                 }
             return "Unknown";
         }
+
+        public override bool IsDeleted(int rowIndex)
+        {
+            long tempPostion = fileStreamDB.Position;
+            long pos = header.headerSize + (long)rowIndex * (long)header.recordSize;
+            fileStreamDB.Seek(pos, SeekOrigin.Begin);   //Размер заголовка+1 + нужная строка*размер записей+ смещение до нужной ячейки
+            byte[] b = new byte[1];
+            fileStreamDB.Read(b, 0, 1);
+            if (b[0] == 32) return false;
+            if (b[0] == 42) return true;
+            fileStreamDB.Position = tempPostion;
+            return false;
+        }
         public override string GetValue(int columnIndex, int rowIndex)
         {
             if ((rowIndex > header.recordsCount) || (columnIndex > columns?.Count)) return "ERR";    //проверка на диапазон кол-ва столбцов            
@@ -163,7 +176,7 @@ namespace DbfShowLib.DBF
             fileStreamDB.Position = positionTemp;
         }
 
-        void ReadColumn()
+        void ReadColumns()
         {
             fileStreamDB.Position = 32;
             GCHandle pHandle = new GCHandle();
@@ -195,7 +208,7 @@ namespace DbfShowLib.DBF
             column = new Column();
 
             ReadHeader();
-            ReadColumn();
+            ReadColumns();
 
         }
 

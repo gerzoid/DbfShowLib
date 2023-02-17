@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbfShowLib.DBF;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -24,6 +25,11 @@ namespace DbfShowLib
 
         public int CountColumns {  get { return countColumns; } }
         public int CountRows { get {  return countRows; } }
+
+        public virtual bool IsDeleted(int rowIndex)
+        {
+            return false;
+        }
 
         public virtual string GetColumnName(int columnIndex)
         {
