@@ -10,6 +10,7 @@ namespace DbfShowLib
         public void OpenFile(string fileName);
         public void Close();
         public string GetVersion();
+        public int GetColumnIndex(string columnName);
         public string GetColumnName(int  columnIndex);
         public string GetColumnType(int columnIndex);
         public int GetColumnSize(int columnName);

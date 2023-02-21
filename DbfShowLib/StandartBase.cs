@@ -36,6 +36,9 @@ namespace DbfShowLib
             return "Col"+columnIndex;
         }
 
+        public abstract int GetColumnIndex(string columnName);
+
+
         public abstract string GetVersion();
         public virtual string GetColumnType(int columnIndex)
         {

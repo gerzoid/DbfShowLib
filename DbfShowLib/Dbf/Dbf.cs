@@ -15,6 +15,25 @@ namespace DbfShowLib.DBF
         private Column column;
         private List<Column>? columns;
 
+        public override int GetColumnIndex(string columnName)
+        {
+            string tmp;
+            for (int c = 0; c <= countColumns - 1; c++)
+            {
+                tmp = new String(columns[c].name).ToUpper();
+                if (tmp.IndexOf('\0') >= 0)
+                {
+                    if (tmp.Substring(0, tmp.IndexOf('\0')).Trim() == columnName.ToUpper())  // Поиск колонки в массиве                
+                        return c;
+                }
+                else
+                    if (tmp == columnName.ToUpper())  // Поиск колонки в массиве
+                    return c;
+            }
+            return -1;
+        }
+
+
         public override string GetColumnName(int columnIndex)
         {
             return new string(columns[columnIndex].name).TrimEnd('\0');
