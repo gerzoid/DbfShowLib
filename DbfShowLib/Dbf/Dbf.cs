@@ -137,8 +137,10 @@ namespace DbfShowLib.DBF
                 case "DATETIME":
                     if (value != "")
                     {
-                        DateTime dd = Convert.ToDateTime(value);
-                        //buf = BitConverter.GetBytes(ConvertDateToJulian(dd));  
+                        //DateTime dd = Convert.Toda.ToDateTime(value);
+                        DateTime dd;
+                        if (!DateTime.TryParse(value, out dd))
+                            return false;
                         buf = BitConverter.GetBytes(ToJulian(dd));
                         TimeSpan span = new TimeSpan(dd.Hour, dd.Minute, dd.Second);
                         int sec = Convert.ToInt32(span.TotalMilliseconds);
