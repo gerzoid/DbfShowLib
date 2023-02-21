@@ -90,6 +90,189 @@ namespace DbfShowLib.DBF
             return ParseValue(columns[columnIndex].tip, buf, columns[columnIndex].pos);
         }
 
+        public override bool SetValue(int columnIndex, int rowIndex, string value)
+        {
+            if ((columnIndex < 0) || (rowIndex < 0))
+                return false;
+            if (rowIndex > header.recordsCount) return false;
+
+            long pos = header.headerSize + 1 + (long)rowIndex * (long)header.recordSize + columns[columnIndex].pos;
+            fileStreamDB?.Seek(pos, SeekOrigin.Begin);   //Размер заголовка+1 + нужная строка*размер записей+ смещение до нужной ячейки                        
+
+            byte[] buf = new byte[columns[columnIndex].sizeBin];
+            byte[] buf2 = new byte[4];
+
+            //Для числовых дробных значений, чтобы ноли были после точки
+            string format = "0";
+            int zp = columns[columnIndex].zpt;
+            if (zp > 0)
+            {
+                format += ".";
+                //format += separator;
+                for (int x = 1; x <= zp; x++)
+                    format += "0";
+            }
+
+            switch (GetColumnType(columnIndex))
+            {
+                case "DATETIME":
+                    if (value != "")
+                    {
+                        DateTime dd = Convert.ToDateTime(value);
+                        //buf = BitConverter.GetBytes(ConvertDateToJulian(dd));  
+                        buf = BitConverter.GetBytes(ToJulian(dd));
+                        TimeSpan span = new TimeSpan(dd.Hour, dd.Minute, dd.Second);
+                        int sec = Convert.ToInt32(span.TotalMilliseconds);
+                        buf2 = BitConverter.GetBytes(Convert.ToInt32(sec));
+                        buf[4] = buf2[0];
+                        buf[5] = buf2[1];
+                        buf[6] = buf2[2];
+                        buf[7] = buf2[3];
+                    }
+                    else
+                    {
+                        if (value.Length > columns[columnIndex].sizeBin)
+                            value = value.Substring(0, columns[columnIndex].sizeBin - 1);
+                        string tempString1 = "";
+                        if (value.Length < columns[columnIndex].sizeBin)
+                        {
+                            for (int x = 0; x <= columns[columnIndex].sizeBin - value.Length - 1; x++)
+                                tempString1 += " ";
+                        }
+                        value += tempString1;
+                        buf = encoding.GetBytes(value);
+                    }
+                    break;
+                case "DATE":
+                    if (value != "")
+                    {
+                        DateTime dateTime = Convert.ToDateTime(value);
+                        string month = Convert.ToString(dateTime.Month);
+                        string day = Convert.ToString(dateTime.Day);
+                        if (month.Length == 1)
+                            month = "0" + month;
+                        if (day.Length == 1)
+                            day = "0" + day;
+                        buf = encoding.GetBytes(Convert.ToString(dateTime.Year) + month + day);
+                    }
+                    else
+                    {
+                        if (value.Length > columns[columnIndex].sizeBin)
+                            value = value.Substring(0, columns[columnIndex].sizeBin - 1);
+                        string tempString1 = "";
+                        if (value.Length < columns[columnIndex].sizeBin)
+                        {
+                            for (int x = 0; x <= columns[columnIndex].sizeBin - value.Length - 1; x++)
+                                tempString1 += " ";
+                        }
+                        value += tempString1;
+                        buf = encoding.GetBytes(value);
+                    }
+                    break;
+                case "DOUBLE":
+                    buf = BitConverter.GetBytes(Math.Round(Convert.ToDouble(value), columns[columnIndex].zpt));
+                    break;
+                case "MEMO":
+                    return false;
+                    break;
+                case "INTEGER":
+                    buf = BitConverter.GetBytes(Convert.ToInt32(value));
+                    break;
+                case "CURRENCY":
+                    buf = BitConverter.GetBytes(Convert.ToInt64(value));
+                    break;
+                case "NUMERIC":
+                    string onePart = "";
+                    string twoPart = "";
+
+                    onePart = value;
+                    var separator = ',';
+                    if (value.IndexOf(separator) > 0)
+                    {
+                        onePart = value.Substring(0, value.IndexOf(separator));
+                        twoPart = value.Substring(value.IndexOf(separator) + 1, value.Length - value.IndexOf(separator) - 1);
+                    }
+
+                    if (onePart.Length > columns[columnIndex].sizeBin - zp - 1)
+                        onePart = onePart.Substring(0, columns[columnIndex].sizeBin - zp - 1);
+
+                    if (value.Trim() != "")
+                        value = onePart + separator + twoPart;
+                    if (value.TrimEnd().TrimStart() != "")
+                        value = Math.Round(Convert.ToDouble(value), columns[columnIndex].zpt).ToString(format);
+
+                    string tempString2 = "";
+                    if (value.Length < columns[columnIndex].sizeBin)
+                    {
+                        for (int x = 0; x <= columns[columnIndex].sizeBin - value.Length - 1; x++)
+                            tempString2 += " ";
+                    }
+                    value = tempString2 + value;
+
+                    value = value.Replace(',', '.');
+
+                    buf = encoding.GetBytes(value);
+                    break;
+                case "FLOAT":
+
+                    onePart = "";
+                    twoPart = "";
+
+                    separator = ',';
+                    onePart = value;
+                    if (value.IndexOf(separator) > 0)
+                    {
+                        onePart = value.Substring(0, value.IndexOf(separator));
+                        twoPart = value.Substring(value.IndexOf(separator) + 1, value.Length - value.IndexOf(separator) - 1);
+                    }
+
+                    if (onePart.Length > columns[columnIndex].sizeBin - zp - 1)
+                        onePart = onePart.Substring(0, columns[columnIndex].sizeBin - zp - 1);
+
+                    value = onePart + separator + twoPart;
+                    if (value.TrimEnd().TrimStart() != "")
+                        value = Math.Round(Convert.ToDouble(value), columns[columnIndex].zpt).ToString(format);
+
+                    tempString2 = "";
+                    if (value.Length < columns[columnIndex].sizeBin)
+                    {
+                        for (int x = 0; x <= columns[columnIndex].sizeBin - value.Length - 1; x++)
+                            tempString2 += " ";
+                    }
+                    value = tempString2 + value;
+                    //!!!!!!!!!!
+                    value = value.Replace(',', '.');
+                    //!!!!!!!!!!
+                    buf = encoding.GetBytes(value);
+                    break;
+
+
+                default:
+                    if (value.Length > columns[columnIndex].sizeBin)
+                        value = value.Substring(0, columns[columnIndex].sizeBin);
+                    
+                    string tempString21 = "";
+                    if (value.Length < columns[columnIndex].sizeBin)
+                    {
+                        for (int x = 0; x <= columns[columnIndex].sizeBin - value.Length - 1; x++)
+                            tempString21 += " ";
+                    }
+                    value += tempString21;
+
+                    buf = encoding.GetBytes(value);
+                    /*if (codePage_ == 65001)
+                    {
+                        int length = Encoding.GetEncoding(codePage_).GetBytes(Value).Length;
+                        if (length > columns[Column].sizeBin)
+                            Array.Resize(ref buf, columns[Column].sizeBin);
+                    }*/
+                    break;
+            }
+            fileStreamDB?.WriteAsync(buf, 0, buf.Length);
+            fileStreamDB?.FlushAsync();
+            return true;
+        }
+            
         public string ParseValue(char tip, byte[] buff, int columnPos)
         {
             switch (tip)

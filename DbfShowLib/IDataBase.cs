@@ -14,7 +14,9 @@ namespace DbfShowLib
         public string GetColumnType(int columnIndex);
         public int GetColumnSize(int columnName);
         public string GetValue(int columnIndex, int rowIndex);
+        public bool SetValue(int columnIndex, int rowIndex, string value);
         public bool IsDeleted(int rowIndex);
+
         
     }
 }
