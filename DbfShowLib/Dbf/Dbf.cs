@@ -115,6 +115,8 @@ namespace DbfShowLib.DBF
                 return false;
             if (rowIndex > header.recordsCount) return false;
 
+            if (value == null) value = "";
+
             long pos = header.headerSize + 1 + (long)rowIndex * (long)header.recordSize + columns[columnIndex].pos;
             fileStreamDB?.Seek(pos, SeekOrigin.Begin);   //Размер заголовка+1 + нужная строка*размер записей+ смещение до нужной ячейки                        
 
@@ -189,6 +191,11 @@ namespace DbfShowLib.DBF
                         value += tempString1;
                         buf = encoding.GetBytes(value);
                     }
+                    break;
+                case "BOOL": var val = value.ToUpper().Trim();
+                    if ((val != "T") || (val != "F"))
+                        return false;
+                        buf = encoding.GetBytes(value);
                     break;
                 case "DOUBLE":
                     buf = BitConverter.GetBytes(Math.Round(Convert.ToDouble(value), columns[columnIndex].zpt));
