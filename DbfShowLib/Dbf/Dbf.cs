@@ -106,14 +106,14 @@ namespace DbfShowLib.DBF
             byte[] buf = new byte[columns[columnIndex].sizeBin];
             fileStreamDB?.Read(buf, 0, columns[columnIndex].sizeBin);
 
-            return ParseValue(columns[columnIndex].tip, buf, columns[columnIndex].pos);
+            return ParseValue(columns[columnIndex].tip, buf);
         }
 
-        public override bool SetValue(int columnIndex, int rowIndex, string value)
+        public override string? SetValue(int columnIndex, int rowIndex, string value)
         {
             if ((columnIndex < 0) || (rowIndex < 0))
-                return false;
-            if (rowIndex > header.recordsCount) return false;
+                return null;
+            if (rowIndex > header.recordsCount) return null;
 
             if (value == null) value = "";
 
@@ -142,7 +142,7 @@ namespace DbfShowLib.DBF
                         //DateTime dd = Convert.Toda.ToDateTime(value);
                         DateTime dd;
                         if (!DateTime.TryParse(value, out dd))
-                            return false;
+                            return null;
                         buf = BitConverter.GetBytes(ToJulian(dd));
                         TimeSpan span = new TimeSpan(dd.Hour, dd.Minute, dd.Second);
                         int sec = Convert.ToInt32(span.TotalMilliseconds);
@@ -193,15 +193,15 @@ namespace DbfShowLib.DBF
                     }
                     break;
                 case "BOOL": var val = value.ToUpper().Trim();
-                    if ((val != "T") || (val != "F"))
-                        return false;
+                        if ((val != "T") || (val != "F"))
+                            return null;
                         buf = encoding.GetBytes(value);
                     break;
                 case "DOUBLE":
                     buf = BitConverter.GetBytes(Math.Round(Convert.ToDouble(value), columns[columnIndex].zpt));
                     break;
                 case "MEMO":
-                    return false;
+                    return null;
                     break;
                 case "INTEGER":
                     buf = BitConverter.GetBytes(Convert.ToInt32(value));
@@ -298,10 +298,11 @@ namespace DbfShowLib.DBF
             }
             fileStreamDB?.WriteAsync(buf, 0, buf.Length);
             fileStreamDB?.FlushAsync();
-            return true;
+            var res = ParseValue(columns[columnIndex].tip, buf);
+            return res;
         }
             
-        public string ParseValue(char tip, byte[] buff, int columnPos)
+        public string ParseValue(char tip, byte[] buff)
         {
             switch (tip)
             {

@@ -51,7 +51,7 @@ namespace DbfShowLib
             fileStreamDB?.Close();
         }
 
-        public abstract bool SetValue(int columnIndex, int rowIndex, string value);
+        public abstract string? SetValue(int columnIndex, int rowIndex, string value);
 
         public virtual string GetValue(int columnIndex, int rowIndex)
         {
