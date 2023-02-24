@@ -13,3 +13,4 @@ package-jquery.json.back
 npm-debug.log
 yarn-error.log
 /logs
+/DbfShowLib/obj/Debug/netstandard2.1/DbfShowLib.assets.cache
