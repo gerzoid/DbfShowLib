@@ -32,8 +32,22 @@ namespace DbfShowLib.DBF
             }
             return -1;
         }
-
-
+        public override bool SetCodePage(byte CodePageID)
+        {
+            try
+            {
+                fileStreamDB?.Seek(29, SeekOrigin.Begin);
+                fileStreamDB?.WriteByte(CodePageID);
+                fileStreamDB?.Flush();
+                header.codePage = CodePageID;
+                codePage = CodePages.FindByCode(Convert.ToString(CodePageID));
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public override string GetColumnName(int columnIndex)
         {
             return new string(columns[columnIndex].name).TrimEnd('\0');
@@ -42,7 +56,6 @@ namespace DbfShowLib.DBF
         {
             return columns[columnIndex].sizeBin;
         }
-
         public override string GetColumnType(int columnIndex)
         {
             if ((columnIndex > columns?.Count - 1) || (columnIndex < 0))
@@ -64,7 +77,6 @@ namespace DbfShowLib.DBF
                 default: return "UNKNOWN";
             }
         }
-
         public override string GetVersion()
         {
             if (headerDBF != null)
@@ -84,7 +96,6 @@ namespace DbfShowLib.DBF
                 }
             return "Unknown";
         }
-
         public override bool IsDeleted(int rowIndex)
         {
             long tempPostion = fileStreamDB.Position;
@@ -108,7 +119,6 @@ namespace DbfShowLib.DBF
 
             return ParseValue(columns[columnIndex].tip, buf);
         }
-
         public override string? SetValue(int columnIndex, int rowIndex, string value)
         {
             if ((columnIndex < 0) || (rowIndex < 0))
@@ -301,7 +311,6 @@ namespace DbfShowLib.DBF
             var res = ParseValue(columns[columnIndex].tip, buf);
             return res;
         }
-            
         public string ParseValue(char tip, byte[] buff)
         {
             switch (tip)
@@ -364,8 +373,6 @@ namespace DbfShowLib.DBF
             }
 
         }
-
-
         public void ReadHeader()
         {
             long positionTemp = fileStreamDB.Position;
@@ -387,7 +394,6 @@ namespace DbfShowLib.DBF
 
             fileStreamDB.Position = positionTemp;
         }
-
         void ReadColumns()
         {
             fileStreamDB.Position = 32;
@@ -423,7 +429,6 @@ namespace DbfShowLib.DBF
             ReadColumns();
 
         }
-
         public static byte[] StructToBuff<T>(T value) where T : struct
         {
             byte[] arr = new byte[Marshal.SizeOf(value)]; // создать массив

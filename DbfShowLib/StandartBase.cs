@@ -26,6 +26,12 @@ namespace DbfShowLib
         public int CountColumns {  get { return countColumns; } }
         public int CountRows { get {  return countRows; } }
 
+        public virtual bool SetCodePage(byte CodePageID)
+        {
+            codePage = CodePages.FindByCode(Convert.ToString(CodePageID));
+            return true;
+        }
+
         public virtual bool IsDeleted(int rowIndex)
         {
             return false;

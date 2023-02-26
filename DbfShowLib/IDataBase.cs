@@ -17,7 +17,6 @@ namespace DbfShowLib
         public string GetValue(int columnIndex, int rowIndex);
         public string? SetValue(int columnIndex, int rowIndex, string value);
         public bool IsDeleted(int rowIndex);
-
-        
+        public bool SetCodePage(byte CodePageID);
     }
 }
