@@ -313,6 +313,7 @@ namespace DbfShowLib.DBF
         }
         public string ParseValue(char tip, byte[] buff)
         {
+            char separator = Convert.ToChar(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
             switch (tip)
             {
                 case 'N':
