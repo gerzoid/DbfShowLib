@@ -127,6 +127,9 @@ namespace DbfShowLib.DBF
 
             if (value == null) value = "";
 
+            char separator = Convert.ToChar(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+            char separator_for_replace = separator == '.' ? ',' : '.';
+
             long pos = header.headerSize + 1 + (long)rowIndex * (long)header.recordSize + columns[columnIndex].pos;
             fileStreamDB?.Seek(pos, SeekOrigin.Begin);   //Размер заголовка+1 + нужная строка*размер записей+ смещение до нужной ячейки                        
 
@@ -223,8 +226,9 @@ namespace DbfShowLib.DBF
                     string onePart = "";
                     string twoPart = "";
 
+                    value = value.Replace(separator_for_replace, separator);
                     onePart = value;
-                    var separator = ',';
+
                     if (value.IndexOf(separator) > 0)
                     {
                         onePart = value.Substring(0, value.IndexOf(separator));
@@ -256,8 +260,8 @@ namespace DbfShowLib.DBF
                     onePart = "";
                     twoPart = "";
 
-                    separator = ',';
-                    onePart = value;
+                    value = value.Replace(separator_for_replace, separator);
+                    onePart = value;                    
                     if (value.IndexOf(separator) > 0)
                     {
                         onePart = value.Substring(0, value.IndexOf(separator));
@@ -314,17 +318,21 @@ namespace DbfShowLib.DBF
         public string ParseValue(char tip, byte[] buff)
         {
             char separator = Convert.ToChar(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+            char separator_for_replace = separator == '.' ?  ',' : '.';
+
             switch (tip)
             {
                 case 'N':
                     string t = encoding.GetString(buff).Trim();
                     if (t.Trim() == "")
-                        return "";
+                        return "";                                        
+                    t = t.Replace(separator_for_replace, separator);
                     return t;
                 case 'F':
                     t = encoding.GetString(buff).Trim();
                     if (t.Trim() == "")
                         return "";
+                    t = t.Replace(separator_for_replace, separator);
                     return t;
                 case 'L':
 
