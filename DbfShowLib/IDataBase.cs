@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DbfShowLib
 {
@@ -15,7 +16,7 @@ namespace DbfShowLib
         public string GetColumnType(int columnIndex);
         public int GetColumnSize(int columnName);
         public string GetValue(int columnIndex, int rowIndex);
-        public string? SetValue(int columnIndex, int rowIndex, string value);
+        public Task<string>? SetValue(int columnIndex, int rowIndex, string value);
         public bool IsDeleted(int rowIndex);
         public bool SetCodePage(byte CodePageID);
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DbfShowLib.DBF
 {
@@ -119,7 +120,7 @@ namespace DbfShowLib.DBF
 
             return ParseValue(columns[columnIndex].tip, buf);
         }
-        public override string? SetValue(int columnIndex, int rowIndex, string value)
+        public override async Task<string>? SetValue(int columnIndex, int rowIndex, string value)
         {
             if ((columnIndex < 0) || (rowIndex < 0))
                 return null;
@@ -147,7 +148,8 @@ namespace DbfShowLib.DBF
                     format += "0";
             }
 
-            switch (GetColumnType(columnIndex))
+            
+            switch (GetColumnType(columnIndex)) 
             {
                 case "DATETIME":
                     if (value != "")
@@ -234,14 +236,26 @@ namespace DbfShowLib.DBF
                         onePart = value.Substring(0, value.IndexOf(separator));
                         twoPart = value.Substring(value.IndexOf(separator) + 1, value.Length - value.IndexOf(separator) - 1);
                     }
-
-                    if (onePart.Length > columns[columnIndex].sizeBin - zp - 1)
-                        onePart = onePart.Substring(0, columns[columnIndex].sizeBin - zp - 1);
-
-                    if (value.Trim() != "")
+                    if (zp > 0)
+                    {
+                        if (onePart.Length > columns[columnIndex].sizeBin - zp - 1)
+                            onePart = onePart.Substring(0, columns[columnIndex].sizeBin - zp - 1);
+                        if (onePart.Trim() == "")
+                            onePart = "0";
+                        if (twoPart.Trim().Length > 0)
+                            twoPart = twoPart.Replace(".", "").Replace(",", "");
                         value = onePart + separator + twoPart;
+                    }
+                    else
+                    {
+                        if (onePart.Length > columns[columnIndex].sizeBin)
+                            onePart = onePart.Substring(0, columns[columnIndex].sizeBin);
+                        value = onePart;
+                    }
+
+
                     if (value.TrimEnd().TrimStart() != "")
-                        value = Math.Round(Convert.ToDouble(value), columns[columnIndex].zpt).ToString(format);
+                        value = Math.Round(Convert.ToDecimal(value), columns[columnIndex].zpt).ToString(format);
 
                     string tempString2 = "";
                     if (value.Length < columns[columnIndex].sizeBin)
@@ -250,10 +264,13 @@ namespace DbfShowLib.DBF
                             tempString2 += " ";
                     }
                     value = tempString2 + value;
-
+                    //!!!!!!!!!!
                     value = value.Replace(',', '.');
-
+                    //!!!!!!!!!!
+                    if (value.Length > columns[columnIndex].sizeBin)
+                        value = value.Substring(0, columns[columnIndex].sizeBin);
                     buf = encoding.GetBytes(value);
+
                     break;
                 case "FLOAT":
 
@@ -268,10 +285,24 @@ namespace DbfShowLib.DBF
                         twoPart = value.Substring(value.IndexOf(separator) + 1, value.Length - value.IndexOf(separator) - 1);
                     }
 
-                    if (onePart.Length > columns[columnIndex].sizeBin - zp - 1)
-                        onePart = onePart.Substring(0, columns[columnIndex].sizeBin - zp - 1);
+                    if (zp > 0)
+                    {
+                        if (onePart.Length > columns[columnIndex].sizeBin - zp - 1)
+                            onePart = onePart.Substring(0, columns[columnIndex].sizeBin - zp - 1);
+                        if (onePart.Trim() == "")
+                            onePart = "0";
+                        if (twoPart.Trim().Length > 0)
+                            twoPart = twoPart.Replace(".", "").Replace(",", "");
+                        value = onePart + separator + twoPart;
+                    }
+                    else
+                    {
+                        if (onePart.Length > columns[columnIndex].sizeBin)
+                            onePart = onePart.Substring(0, columns[columnIndex].sizeBin);
+                        value = onePart;
+                    }
 
-                    value = onePart + separator + twoPart;
+
                     if (value.TrimEnd().TrimStart() != "")
                         value = Math.Round(Convert.ToDouble(value), columns[columnIndex].zpt).ToString(format);
 
@@ -285,6 +316,8 @@ namespace DbfShowLib.DBF
                     //!!!!!!!!!!
                     value = value.Replace(',', '.');
                     //!!!!!!!!!!
+                    if (value.Length > columns[columnIndex].sizeBin)
+                        value = value.Substring(0, columns[columnIndex].sizeBin);
                     buf = encoding.GetBytes(value);
                     break;
 
@@ -302,16 +335,16 @@ namespace DbfShowLib.DBF
                     value += tempString21;
 
                     buf = encoding.GetBytes(value);
-                    /*if (codePage_ == 65001)
+                    if (encoding.CodePage == 65001)
                     {
-                        int length = Encoding.GetEncoding(codePage_).GetBytes(Value).Length;
-                        if (length > columns[Column].sizeBin)
-                            Array.Resize(ref buf, columns[Column].sizeBin);
-                    }*/
+                        int length = encoding.GetBytes(value).Length;
+                        if (length > columns[columnIndex].sizeBin)
+                            Array.Resize(ref buf, columns[columnIndex].sizeBin);
+                    }
                     break;
             }
-            fileStreamDB?.WriteAsync(buf, 0, buf.Length);
-            fileStreamDB?.FlushAsync();
+            await fileStreamDB?.WriteAsync(buf, 0, buf.Length);
+            await fileStreamDB?.FlushAsync();
             var res = ParseValue(columns[columnIndex].tip, buf);
             return res;
         }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DbfShowLib
 {
@@ -57,7 +58,7 @@ namespace DbfShowLib
             fileStreamDB?.Close();
         }
 
-        public abstract string? SetValue(int columnIndex, int rowIndex, string value);
+        public abstract Task<string>? SetValue(int columnIndex, int rowIndex, string value);
 
         public virtual string GetValue(int columnIndex, int rowIndex)
         {
