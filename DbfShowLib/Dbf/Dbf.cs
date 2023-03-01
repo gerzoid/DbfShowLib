@@ -471,6 +471,50 @@ namespace DbfShowLib.DBF
             ReadColumns();
 
         }
+
+       /* public void Zap()
+        {
+            int count = 0;
+            int countBytes = 0;
+            fileStreamDB.Seek(0, SeekOrigin.Begin);
+            fileStreamTMPDB = new FileStream(PATH_FOLDER_TEMP + "\\dbfileStreamDBhow.tmp", FileMode.Create);
+            byte[] tmp = new byte[65536];
+            fileStreamDB.Read(tmp, 0, header.headerSize);
+            countBytes = header.headerSize;
+            for (int x = 0; x <= GetCountRows - 1; x++)
+            {
+                if (!Deleted(x))
+                {
+                    fileStreamDB.Seek(GetPostionRowInFileStart(x) - 1, SeekOrigin.Begin);
+                    if (countBytes + header.recordSize >= 65536)
+                    {
+                        fileStreamTMPDB.Write(tmp, 0, countBytes);
+                        countBytes = 0;
+                    }
+                    fileStreamDB.Read(tmp, countBytes, header.recordSize);
+                    countBytes += header.recordSize;
+                    count++;
+                }
+            }
+            if (countBytes != 0)
+            {
+                fileStreamTMPDB.Write(tmp, 0, countBytes);
+                countBytes = 0;
+            }
+            fileStreamTMPDB.Seek(4, SeekOrigin.Begin);
+            fileStreamTMPDB.Write(IntToByteArray(count), 0, 4);
+            header.recordsCount = count;
+            countRows = count;
+            fileStreamTMPDB.Flush();
+            tmp = new byte[fileStreamTMPDB.Length];
+            fileStreamTMPDB.Seek(0, SeekOrigin.Begin);
+            fileStreamTMPDB.Read(tmp, 0, Convert.ToInt32(fileStreamTMPDB.Length));
+            fileStreamDB.Seek(0, SeekOrigin.Begin);
+            fileStreamDB.Write(tmp, 0, Convert.ToInt32(fileStreamTMPDB.Length));
+            fileStreamDB.SetLength(fileStreamTMPDB.Length);
+            fileStreamTMPDB.Close();
+        }*/
+
         public static byte[] StructToBuff<T>(T value) where T : struct
         {
             byte[] arr = new byte[Marshal.SizeOf(value)]; // создать массив
