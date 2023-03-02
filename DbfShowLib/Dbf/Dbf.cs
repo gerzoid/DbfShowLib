@@ -184,6 +184,8 @@ namespace DbfShowLib.DBF
                 case "DATE":
                     if (value != "")
                     {
+                        if (value.Trim().Length != 10)
+                            return null;
                         DateTime dateTime = Convert.ToDateTime(value);
                         string month = Convert.ToString(dateTime.Month);
                         string day = Convert.ToString(dateTime.Day);
@@ -208,9 +210,11 @@ namespace DbfShowLib.DBF
                     }
                     break;
                 case "BOOL": var val = value.ToUpper().Trim();
-                        if ((val != "T") || (val != "F"))
-                            return null;
+                    if ((val == "T") || (val == "F"))
+                    {
                         buf = encoding.GetBytes(value);
+                    }else
+                        return null;
                     break;
                 case "DOUBLE":
                     buf = BitConverter.GetBytes(Math.Round(Convert.ToDouble(value), columns[columnIndex].zpt));
