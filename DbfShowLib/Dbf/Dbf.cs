@@ -451,7 +451,12 @@ namespace DbfShowLib.DBF
                 fileStreamDB.Read(columnDBF, 0, 32);
                 pHandle = GCHandle.Alloc(columnDBF, GCHandleType.Pinned);
                 column = (Column)Marshal.PtrToStructure(pHandle.AddrOfPinnedObject(), typeof(Column));
+                //////////////////////////////////
+                byte[] nameColumn = new byte[10];
+                Array.Copy(columnDBF, nameColumn, 10);
+                column.name = encoding.GetString(nameColumn).TrimEnd().ToCharArray();
 
+                /////////////////////////////////
                 column.pos = pos;
                 pos += column.sizeBin;
 
@@ -473,7 +478,6 @@ namespace DbfShowLib.DBF
 
             ReadHeader();
             ReadColumns();
-
         }
 
        /* public void Zap()

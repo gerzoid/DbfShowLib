@@ -3,6 +3,7 @@
 **/wwwroot/lib/
 **/bin
 **/obj
+/obj
 /.idea
 **/node_modules/
 /public
