@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbfShowLib.Sorting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -16,8 +17,12 @@ namespace DbfShowLib
         public string GetColumnType(int columnIndex);
         public int GetColumnSize(int columnName);
         public string GetValue(int columnIndex, int rowIndex);
+        public string GetValueWithFilter(int columnIndex, int rowIndex);
         public Task<string>? SetValue(int columnIndex, int rowIndex, string value);
         public bool IsDeleted(int rowIndex);
         public bool SetCodePage(byte CodePageID);
+        public int GetCurrentRowPosition(int RowIndex);
+        public void SortValue(string ColumnName, SortingType sortingType);        
+
     }
 }

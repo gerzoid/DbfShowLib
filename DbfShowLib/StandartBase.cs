@@ -1,4 +1,5 @@
 ﻿using DbfShowLib.DBF;
+using DbfShowLib.Sorting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,6 +58,47 @@ namespace DbfShowLib
         {
             fileStreamDB?.Close();
         }
+
+        //Выдает текущую позицию строки в зависимости от фильтрации или сортировки.. 
+        public virtual int GetCurrentRowPosition(int RowIndex)
+        {
+            if (filteredRecords != null)
+            {
+                return filteredRecords.Length > 0 ? filteredRecords[RowIndex] : RowIndex;
+            }
+            else
+                return RowIndex;
+        }
+
+        public virtual void SortValue(string ColumnName, SortingType sortingType)
+        {
+            int indexColumnInDB = GetColumnIndex(ColumnName);
+
+            string[] filteredRecordsValue;
+            if (filteredRecords == null)
+            {
+                filteredRecords = new int[countRows];
+                filteredRecordsValue = new string[countRows];
+                for (int i = 0; i <= countRows - 1; i++)
+                {
+                    filteredRecordsValue[i] = GetValue(indexColumnInDB, i);
+                    filteredRecords[i] = i;
+                }
+            }
+            else
+            {
+                filteredRecordsValue = new string[filteredRecords.Length];
+                for (int i = 0; i <= filteredRecords.Length - 1; i++)
+                    filteredRecordsValue[i] = GetValue(indexColumnInDB, filteredRecords[i]);
+            }
+            Sort sortClass = new Sort();
+            sortClass.SortArray(ref filteredRecordsValue, ref filteredRecords, ColumnName, GetColumnType(indexColumnInDB), sortingType);
+            //SortingColumns.sortingColumns.Clear();
+            //SortingColumns.sortingColumns.Add(new SortingColumn() { columnName = ColumnName, columnIndex = indexColumnInDB, type = sortingType });
+            filteredRecordsValue = null;
+        }
+
+        public abstract string GetValueWithFilter(int columnIndex, int rowIndex);
 
         public abstract Task<string>? SetValue(int columnIndex, int rowIndex, string value);
 

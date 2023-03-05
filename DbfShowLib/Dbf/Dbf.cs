@@ -109,6 +109,11 @@ namespace DbfShowLib.DBF
             fileStreamDB.Position = tempPostion;
             return false;
         }
+        public override string GetValueWithFilter(int columnIndex, int rowIndex)
+        {
+            return GetValue(columnIndex, GetCurrentRowPosition(rowIndex));
+        }
+
         public override string GetValue(int columnIndex, int rowIndex)
         {
             if ((rowIndex > header.recordsCount) || (columnIndex > columns?.Count)) return "ERR";    //проверка на диапазон кол-ва столбцов            
@@ -122,6 +127,8 @@ namespace DbfShowLib.DBF
         }
         public override async Task<string>? SetValue(int columnIndex, int rowIndex, string value)
         {
+            rowIndex = GetCurrentRowPosition(rowIndex);
+
             if ((columnIndex < 0) || (rowIndex < 0))
                 return null;
             if (rowIndex > header.recordsCount) return null;
